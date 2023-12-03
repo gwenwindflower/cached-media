@@ -29,4 +29,17 @@ async def root(filename: str):
         return HTMLResponse(content=html_content)
 
     except Exception:
+        html_content = f"""
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <title>Cached Media Store</title>
+        </head>
+        <body>
+            <h1>{filename}</h1>
+            <p>File {filename} not found</p>
+        </body>
+        </html>
+        """
+        return HTMLResponse(content=html_content)
         raise HTTPException(status_code=404, detail="File not found")
