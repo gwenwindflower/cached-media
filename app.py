@@ -1,17 +1,27 @@
 from fastapi import FastAPI, HTTPException
 from fastapi.responses import HTMLResponse
 from boto3 import client
+from botocore.exceptions import NoCredentialsError
+import urllib.parse
 
 app = FastAPI()
 s3 = client("s3", region_name="us-east-2")
 
 @app.get("/download/{filename}")
-async def root(filename: str):
+def generate_presigned_url(filename: str):
+    filename = filename + ".zip"
+    safe_filename = urllib.parse.quote_plus(filename)
+    content_disposition = f'attachment; filename="{safe_filename}"'
+
     try:
-        filename = filename + ".zip"
-        response = s3.get_object(Bucket="cached-media", Key=filename)
-        file_content = response['Body'].read()
-
+        presigned_url = s3.generate_presigned_url(
+            'get_object',
+            Params={'Bucket': 'cached-media',
+                    'Key': filename,
+                    'ResponseContentDisposition': content_disposition},
+            ExpiresIn=600
+        )
+        
         html_content = f"""
         <!DOCTYPE html>
         <html>
@@ -20,24 +30,10 @@ async def root(filename: str):
         </head>
         <body>
             <h1>{filename}</h1>
-            <p>Thank you for downloading {filename}</p>
+            <a href={presigned_url} download="{filename}">Click here to download {filename}</a>
         </body>
         </html>
         """
-        return HTMLResponse(content=html_content), file_content
-
-    except Exception:
-        html_content = f"""
-        <!DOCTYPE html>
-        <html>
-        <head>
-            <title>Cached Media Store</title>
-        </head>
-        <body>
-            <h1>{filename}</h1>
-            <p>File {filename} not found</p>
-        </body>
-        </html>
-        """
-        return HTMLResponse(content=html_content)
-        raise HTTPException(status_code=404, detail="File not found")
+        return HTMLResponse(content=html_content, status_code=200)
+    except NoCredentialsError:
+        return {"error": "Credentials not available"}
