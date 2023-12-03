@@ -11,7 +11,7 @@ async def root(filename: str):
         filename = filename + ".zip"
         response = s3.get_object(Bucket="cached-media", Key=filename)
         file_content = response['Body'].read()
-        with open('meme-databank.zip', 'wb') as file:
+        with open(filename, 'wb') as file:
             file.write(file_content)
 
         html_content = f"""
