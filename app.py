@@ -11,8 +11,6 @@ async def root(filename: str):
         filename = filename + ".zip"
         response = s3.get_object(Bucket="cached-media", Key=filename)
         file_content = response['Body'].read()
-        with open(filename, 'wb') as file:
-            file.write(file_content)
 
         html_content = f"""
         <!DOCTYPE html>
@@ -26,7 +24,7 @@ async def root(filename: str):
         </body>
         </html>
         """
-        return HTMLResponse(content=html_content)
+        return HTMLResponse(content=html_content), file_content
 
     except Exception:
         html_content = f"""
