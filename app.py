@@ -3,7 +3,7 @@ from fastapi.responses import HTMLResponse
 from boto3 import client
 
 app = FastAPI()
-s3 = client("s3")
+s3 = client("s3", region_name="us-east-2")
 
 @app.get("/download/{filename}")
 async def root(filename: str):
