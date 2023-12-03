@@ -12,11 +12,12 @@ def generate_presigned_url(filename: str):
     filename = filename + ".zip"
     safe_filename = urllib.parse.quote_plus(filename)
     content_disposition = f'attachment; filename="{safe_filename}"'
+    bucket_name = "cached-media"
 
     try:
         presigned_url = s3.generate_presigned_url(
             'get_object',
-            Params={'Bucket': 'cached-media',
+            Params={'Bucket': bucket_name,
                     'Key': filename,
                     'ResponseContentDisposition': content_disposition},
             ExpiresIn=600
