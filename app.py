@@ -25,12 +25,33 @@ def generate_presigned_url(filename: str):
         
         html_content = f"""
         <!DOCTYPE html>
+        <style>
+            body {{
+                background-color: #efefef;
+                font-size: 2rem;
+                color: #333;
+                font-family: sans-serif;
+                padding: 1rem;
+            }}
+            a {{
+                color: #333;
+                font-family: monospace;
+                text-decoration: none;
+                box-shadow: inset 0 -0.7rem 0 0 rgba(0, 120, 100, 0.5);
+                color: inherit;
+                transition: 0.2s;
+            }}
+            a:hover {{
+                box-shadow: inset 0 -1.5rem 0 0 rgba(0, 120, 100, 0.5);
+                transition: 0.2s;
+            }}
+        </style>
         <html>
         <head>
-            <title>Cached Media Store</title>
+            <title>Cached Media Store | {filename}</title>
         </head>
         <body>
-            <h1>{filename}</h1>
+            <h1>Thanks for your support!</h1>
             <a href={presigned_url} download="{filename}">Click here to download {filename}</a>
         </body>
         </html>
